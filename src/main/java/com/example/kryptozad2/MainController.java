@@ -101,22 +101,25 @@ public class MainController {
         encryptButton.setOnAction(a -> encryptMessage());
         decryptButton.setOnAction(a -> decryptMessage());
         setFile.setOnAction(a -> loadFile());
-
         generateKeysButton.setOnAction(a -> generateKeys());
-        mainBorder.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE,null,null)));
-        mainBackground.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE,null,null)));
-        publicKeyG.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
-        publicKeyH.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
-        publicKeyA.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
-        modN.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
-        textToEncrypt.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
-        textToDecrypt.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
-        filePath.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
+        setDefaultBorders();
 
     }
 
     public void generateKeys() {
 
+    }
+
+    public boolean verifyKeys() {
+        if(false){//Tu sie da weryfikacja w algorytmie
+            publicKeyG.setBorder(new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
+            publicKeyH.setBorder(new Border(new BorderStroke(Color.RED,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
+            publicKeyA.setBorder(new Border(new BorderStroke(Color.RED,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
+            modN.setBorder(new Border(new BorderStroke(Color.RED,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
+            infoLabel.setText("Niepoprawne klucze");
+            return false;
+        }
+        return true;
     }
     public void loadFile() {
         FileChooser fileChooser = new FileChooser();
@@ -138,18 +141,18 @@ public class MainController {
         }
         infoLabel.setText("");
         saveButton.setVisible(false);
-        filePath.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
-        textToEncrypt.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
-        textToDecrypt.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
+        setDefaultBorders();
     }
 
 
 
     public void encryptMessage() {
-        filePath.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
-        textToEncrypt.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
-        textToDecrypt.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
+        setDefaultBorders();
         ElGamal elGamal = new ElGamal();
+
+        if(!verifyKeys()) {
+            return;
+        }
 
         if(radioWindow.isSelected()) {
             if(textToEncrypt.getText() == "") {
@@ -181,10 +184,12 @@ public class MainController {
     }
 
     public void decryptMessage() {
-        filePath.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
-        textToEncrypt.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
-        textToDecrypt.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
+        setDefaultBorders();
+
         ElGamal elGamal = new ElGamal();
+        if(!verifyKeys()) {
+            return;
+        }
 
         if(radioWindow.isSelected()) {
             if(textToDecrypt.getText() == "") {
@@ -211,6 +216,18 @@ public class MainController {
         saveButton.setText("Zapisz odszyfrowany");
         infoLabel.setText("Odszyfrowano pomyślnie");
 
+    }
+
+    public void setDefaultBorders() {
+        mainBorder.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE,null,null)));
+        mainBackground.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE,null,null)));
+        publicKeyG.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
+        publicKeyH.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
+        publicKeyA.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
+        modN.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
+        textToEncrypt.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
+        textToDecrypt.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
+        filePath.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
     }
     public void saveFile() {
         FileChooser fileChooser = new FileChooser();
