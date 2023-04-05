@@ -84,7 +84,7 @@ public class MainController {
         Scene scene = new Scene(fxmlLoader.load(), 850, 600);
         mainController = fxmlLoader.getController();
         mainController.defaultSettings();
-        stage.setTitle("Hello!");
+        stage.setTitle("ElGamal encryption program");
         stage.setScene(scene);
         stage.show();
     }
@@ -148,7 +148,6 @@ public class MainController {
 
     public void encryptMessage() {
         setDefaultBorders();
-        ElGamal elGamal = new ElGamal();
 
         if(!verifyKeys()) {
             return;
