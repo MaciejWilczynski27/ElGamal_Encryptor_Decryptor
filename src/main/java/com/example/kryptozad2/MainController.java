@@ -107,6 +107,8 @@ public class MainController {
     }
 
     public void generateKeys() {
+        ElGamal elGamal = new ElGamal();
+        elGamal.generateKeys();
 
     }
 
