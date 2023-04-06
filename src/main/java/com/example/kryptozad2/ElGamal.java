@@ -9,10 +9,27 @@ public class ElGamal {
     private BigInteger p;
     private BigInteger k;
     private BigInteger h;
+
+    public void setP(BigInteger p) {
+        this.p = p;
+    }
+
+    public void setH(BigInteger h) {
+        this.h = h;
+    }
+
+    public void setG(BigInteger g) {
+        this.g = g;
+    }
+
     private BigInteger g;
     private BigInteger Nm1;
 
-    private String publicKey = "";
+    private String pKey = "";
+
+    private String gKey = "";
+
+    private String hKey = "";
 
     private String privateKey = "";
 
@@ -37,42 +54,69 @@ public class ElGamal {
         byte[] t2 = g.toByteArray();
         byte[] t3 = h.toByteArray();
         byte[] t4 = k.toByteArray();
-        byte[] fajrant = p.add(g).add(h).toByteArray();
-        publicKey = Base64.getEncoder().encodeToString(fajrant);
-        //publicKey = Base64.getEncoder().encodeToString(t1) + Base64.getEncoder().encodeToString(t2) + Base64.getEncoder().encodeToString(t3);
-        privateKey = Base64.getEncoder().encodeToString(t4);
-        System.out.println(publicKey);
-        System.out.println(privateKey);
+        HexFormat hex = HexFormat.of();
+        pKey = hex.formatHex(t1);
+        gKey = hex.formatHex(t2);
+        hKey = hex.formatHex(t3);
+        privateKey = hex.formatHex(t4);
+
     }
 
+    public byte[] encryptMessage(byte[] toEncrypt) {
+        byte[] encrypted = null;
 
+        BigInteger b = new BigInteger(256, new SecureRandom());
+        BigInteger temp = new BigInteger(toEncrypt);
+        BigInteger c1 = g.modPow(b, p);
+        BigInteger c2 = h.modPow(b, p);
+        c2 = c2.multiply(temp);
+            System.out.println("c1: " +c1);
+            System.out.println("c2: " +c2);
 
-
-    public BigInteger findPrimitiveRoot(BigInteger p) {
-        BigInteger one = BigInteger.ONE;
-        BigInteger two = BigInteger.valueOf(2);
-        BigInteger phi = p.subtract(one);
-        BigInteger[] factors = phi.divideAndRemainder(two);
-        while (true) {
-            BigInteger g = getRandomNumberInRange(two, p.subtract(one));
-            if (g.modPow(factors[0], p).equals(one) || g.modPow(factors[1], p).equals(one)) {
-                continue;
-            }
-            boolean isPrimitiveRoot = true;
-            for (BigInteger i = two; i.compareTo(phi) < 0; i = i.add(one)) {
-                if (g.modPow(i, p).equals(one)) {
-                    isPrimitiveRoot = false;
-                    break;
-                }
-            }
-            if (isPrimitiveRoot) {
-                return g;
-            }
-        }
+    return encrypted;
     }
 
-    public BigInteger getRandomNumberInRange(BigInteger min, BigInteger max) {
-        BigInteger range = max.subtract(min).add(BigInteger.ONE);
-        return new BigInteger(range.bitLength(), new Random()).add(min).mod(range).add(min);
+    public String decryptMessage(BigInteger c1) {
+        BigInteger temp;
+        BigInteger subs = BigInteger.valueOf(2);
+        BigInteger temp2;
+        temp = c1.modPow(k,p);
+        temp2 = temp.modPow((p.subtract(subs)),p);
+        //temp2 = c2.multiply(temp2);
+        byte[] test = temp2.toByteArray();
+        String decrypted = new String(test);
+        return decrypted;
+    }
+
+    public String getpKey() {
+        return pKey;
+    }
+
+    public String getgKey() {
+        return gKey;
+    }
+
+    public String gethKey() {
+        return hKey;
+    }
+
+    public void setpKey(String pKey) {
+        this.pKey = pKey;
+    }
+
+    public void setgKey(String gKey) {
+        this.gKey = gKey;
+    }
+
+    public void sethKey(String hKey) {
+        this.hKey = hKey;
+    }
+
+    public void setPrivateKey(String privateKey) {
+        this.privateKey = privateKey;
+    }
+
+    public String getPrivateKey() {
+        return privateKey;
     }
 }
