@@ -2,8 +2,8 @@ package com.example.kryptozad2;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.Base64;
-import java.util.Random;
+import java.util.HexFormat;
+
 
 public class ElGamal {
     private BigInteger p;
@@ -33,20 +33,18 @@ public class ElGamal {
 
     private String privateKey = "";
 
-
-
     public void generateKeys() {
-        p = BigInteger.probablePrime(514,new SecureRandom());
-        g = new BigInteger(512,new SecureRandom());
-        k = new BigInteger(512,new SecureRandom()); // to tylko prywatny
+        p = BigInteger.probablePrime(512, new SecureRandom());
+        g = new BigInteger(512, new SecureRandom());
+        k = new BigInteger(512, new SecureRandom()); // to tylko prywatny
         // N == p // g == g // a == k //
 
-        h = g.modPow(k,p);
+        h = g.modPow(k, p);
         Nm1 = p.subtract(BigInteger.ONE);
 
-        while(true) {
-            p = BigInteger.probablePrime(108,new SecureRandom());
-            if(p.gcd(Nm1).equals(BigInteger.ONE)) {
+        while (true) {
+            p = BigInteger.probablePrime(512, new SecureRandom());
+            if (p.gcd(Nm1).equals(BigInteger.ONE)) {
                 break;
             }
         }

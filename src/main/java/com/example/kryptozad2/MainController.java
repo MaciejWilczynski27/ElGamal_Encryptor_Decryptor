@@ -12,9 +12,11 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HexFormat;
 
 public class MainController {
 
@@ -25,16 +27,16 @@ public class MainController {
     AnchorPane mainBackground;
 
     @FXML
+    TextField publicKeyP;
+
+    @FXML
     TextField publicKeyG;
 
     @FXML
     TextField publicKeyH;
 
     @FXML
-    TextField publicKeyA;
-
-    @FXML
-    TextField modN;
+    TextField privateKey;
 
     @FXML
     Button generateKeysButton;
@@ -79,6 +81,12 @@ public class MainController {
 
     File file;
 
+    BigInteger p;
+    BigInteger h;
+    BigInteger g;
+    BigInteger pk;
+
+
     public void showStage() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("hello-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 850, 600);
@@ -109,15 +117,20 @@ public class MainController {
     public void generateKeys() {
         ElGamal elGamal = new ElGamal();
         elGamal.generateKeys();
+        publicKeyP.setText(HexFormat.of().formatHex( convertHexStringToBigInt(elGamal.getPrivateKey()).toByteArray()));
 
+        publicKeyP.setText(elGamal.getpKey());
+        publicKeyH.setText(elGamal.gethKey());
+        publicKeyG.setText(elGamal.getgKey());
+        privateKey.setText(elGamal.getPrivateKey());
     }
 
     public boolean verifyKeys() {
         if(false){//Tu sie da weryfikacja w algorytmie
             publicKeyG.setBorder(new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
             publicKeyH.setBorder(new Border(new BorderStroke(Color.RED,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
-            publicKeyA.setBorder(new Border(new BorderStroke(Color.RED,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
-            modN.setBorder(new Border(new BorderStroke(Color.RED,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
+            publicKeyP.setBorder(new Border(new BorderStroke(Color.RED,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
+            privateKey.setBorder(new Border(new BorderStroke(Color.RED,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
             infoLabel.setText("Niepoprawne klucze");
             return false;
         }
@@ -150,11 +163,9 @@ public class MainController {
 
     public void encryptMessage() {
         setDefaultBorders();
-
         if(!verifyKeys()) {
             return;
         }
-
         if(radioWindow.isSelected()) {
             if(textToEncrypt.getText() == "") {
                 textToEncrypt.setBorder(new Border(new BorderStroke(Color.RED,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
@@ -171,6 +182,11 @@ public class MainController {
                 return;
             }
         }
+        ElGamal elGamal = new ElGamal();
+        elGamal.setG(convertHexStringToBigInt(publicKeyG.getText()));
+        elGamal.setH(convertHexStringToBigInt(publicKeyH.getText()));
+        elGamal.setP(convertHexStringToBigInt(publicKeyP.getText()));
+        content = elGamal.encryptMessage(content);
         //tu szyfrowanie
 
         if(radioWindow.isSelected()) {
@@ -186,8 +202,6 @@ public class MainController {
 
     public void decryptMessage() {
         setDefaultBorders();
-
-        ElGamal elGamal = new ElGamal();
         if(!verifyKeys()) {
             return;
         }
@@ -207,6 +221,9 @@ public class MainController {
                 infoLabel.setText("Błąd przy odczycie pliku");
                 return;
             }
+            ElGamal elGamal = new ElGamal();
+            elGamal.decryptMessage(new BigInteger(textToDecrypt.getText()));
+
         }
 
         //tu deszyfrowanie
@@ -224,8 +241,8 @@ public class MainController {
         mainBackground.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE,null,null)));
         publicKeyG.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
         publicKeyH.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
-        publicKeyA.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
-        modN.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
+        publicKeyP.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
+        privateKey.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
         textToEncrypt.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
         textToDecrypt.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
         filePath.setBorder(new Border(new BorderStroke(Color.GREEN,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
@@ -245,5 +262,8 @@ public class MainController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    public BigInteger convertHexStringToBigInt(String text){
+        return new BigInteger(text,16);
     }
 }
