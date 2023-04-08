@@ -66,7 +66,7 @@ public class ElGamal {
 
     }
 
-    public String encryptMessage(byte[] toEncrypt) {
+    public String[] encryptMessage(byte[] toEncrypt) {
 
         BigInteger b = new BigInteger(500, new SecureRandom());
         if(Nm1 == null) {
@@ -87,8 +87,18 @@ public class ElGamal {
         c2 = c2.multiply(temp);
             System.out.println("c1: " +c1);
             System.out.println("c2: " +c2);
+            String[] parts = new String[2];
+            parts[0] = c1.toString();
+            parts[1] =c2.toString();
+    return parts;
+    }
 
-    return (c1.toString()+c2.toString());
+    public BigInteger getC1() {
+        return c1;
+    }
+
+    public BigInteger getC2() {
+        return c2;
     }
 
     public String decryptMessage() {

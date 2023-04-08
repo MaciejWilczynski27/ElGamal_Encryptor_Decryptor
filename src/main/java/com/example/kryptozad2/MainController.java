@@ -16,7 +16,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HexFormat;
+import java.util.*;
 
 public class MainController {
 
@@ -163,7 +163,6 @@ public class MainController {
     }
 
 
-
     public void encryptMessage() {
         setDefaultBorders();
         if(!verifyKeys()) {
@@ -175,7 +174,7 @@ public class MainController {
                 infoLabel.setText("Pole jest puste");
                 return;
             }
-            content = textToEncrypt.getText().getBytes();//tu format moze sie psuc
+            content = textToEncrypt.getText().getBytes(StandardCharsets.UTF_8);//tu format moze sie psuc
         } else if (radioFile.isSelected()) {
             try {
                 content = Files.readAllBytes(Paths.get(filePath.getText()));
@@ -189,14 +188,16 @@ public class MainController {
         elGamal.setP(new BigInteger(HexFormat.of().parseHex(publicKeyP.getText())));
         elGamal.setH(new BigInteger(HexFormat.of().parseHex(publicKeyH.getText())));
         elGamal.setG(new BigInteger(HexFormat.of().parseHex(publicKeyG.getText())));
-        textToDecrypt.setText(elGamal.encryptMessage(textToEncrypt.getText().getBytes(StandardCharsets.UTF_8)));
+        String[] parts = elGamal.encryptMessage(content);
+        String partsCombined = parts[0] + "\n" + parts[1];
+        if(radioWindow.isSelected()) {
+            textToDecrypt.setText(partsCombined);
+        } else if(radioFile.isSelected()) {
+            content = partsCombined.getBytes(StandardCharsets.UTF_8);
+            saveButton.setVisible(true);
+            saveButton.setText("Zapisz zaszyfrowany");
+        }
 
-//        if(radioWindow.isSelected()) {
-//             textToDecrypt.setText(new String(content, StandardCharsets.UTF_8));
-//        }
-
-        saveButton.setVisible(true);
-        saveButton.setText("Zapisz zaszyfrowany");
         infoLabel.setText("Zaszyfrowano pomyślnie");
 
     }
@@ -224,20 +225,23 @@ public class MainController {
             }
 
         }
-
         ElGamal elGamal = new ElGamal();
-        elGamal.setC1(new BigInteger(textToDecrypt.getText()));
-        elGamal.setC2(new BigInteger(textToDecrypt2.getText()));
         elGamal.setP(new BigInteger(HexFormat.of().parseHex(publicKeyP.getText())));
         elGamal.setPrivateKey(new BigInteger(HexFormat.of().parseHex(privateKey.getText())));
-       // System.out.println(elGamal.decryptMessage());
-        textToEncrypt.setText(elGamal.decryptMessage());
+        if(radioWindow.isSelected()) {
+            String[] parts = textToDecrypt.getText().split("\n");
+            elGamal.setC1(new BigInteger(parts[0]));
+            elGamal.setC2(new BigInteger(parts[1]));
+            textToEncrypt.setText(elGamal.decryptMessage());
+        } else if(radioFile.isSelected()){
+            String[] parts = new String(content).split("\n");
+            elGamal.setC1(new BigInteger(parts[0]));
+            elGamal.setC2(new BigInteger(parts[1]));
+            content = elGamal.decryptMessage().getBytes();
+            saveButton.setVisible(true);
+            saveButton.setText("Zapisz odszyfrowany");
+        }
 
-//        if(radioWindow.isSelected()) {
-//            textToEncrypt.setText(new String(content, StandardCharsets.UTF_8));
-//        }
-        saveButton.setVisible(true);
-        saveButton.setText("Zapisz odszyfrowany");
         infoLabel.setText("Odszyfrowano pomyślnie");
 
     }
@@ -255,10 +259,10 @@ public class MainController {
     }
     public void saveFile() {
         FileChooser fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter pdfFilter = new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf");
-        fileChooser.getExtensionFilters().add(pdfFilter);
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
         fileChooser.getExtensionFilters().add(extFilter);
+        FileChooser.ExtensionFilter pdfFilter = new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf");
+        fileChooser.getExtensionFilters().add(pdfFilter);
         FileChooser.ExtensionFilter binFilter = new FileChooser.ExtensionFilter("Binary Files (*.bin)", "*.bin");
         fileChooser.getExtensionFilters().add(binFilter);
         fileChooser.setTitle("Zapisz plik");
