@@ -48,6 +48,9 @@ public class MainController {
     TextArea textToDecrypt;
 
     @FXML
+    TextArea textToDecrypt2;
+
+    @FXML
     RadioButton radioFile;
 
     @FXML
@@ -183,16 +186,14 @@ public class MainController {
             }
         }
         ElGamal elGamal = new ElGamal();
-        elGamal.setG(convertHexStringToBigInt(publicKeyG.getText()));
-        elGamal.setH(convertHexStringToBigInt(publicKeyH.getText()));
-        elGamal.setP(convertHexStringToBigInt(publicKeyP.getText()));
-        content = elGamal.encryptMessage(content);
-        //tu szyfrowanie
+        elGamal.setP(new BigInteger(HexFormat.of().parseHex(publicKeyP.getText())));
+        elGamal.setH(new BigInteger(HexFormat.of().parseHex(publicKeyH.getText())));
+        elGamal.setG(new BigInteger(HexFormat.of().parseHex(publicKeyG.getText())));
+        textToDecrypt.setText(elGamal.encryptMessage(textToEncrypt.getText().getBytes(StandardCharsets.UTF_8)));
 
-        if(radioWindow.isSelected()) {
-       //Tu nw jaki format ma byc w zaszyfrowanym oknie jeszcze
-             textToDecrypt.setText(new String(content, StandardCharsets.UTF_8));
-        }
+//        if(radioWindow.isSelected()) {
+//             textToDecrypt.setText(new String(content, StandardCharsets.UTF_8));
+//        }
 
         saveButton.setVisible(true);
         saveButton.setText("Zapisz zaszyfrowany");
@@ -221,15 +222,20 @@ public class MainController {
                 infoLabel.setText("Błąd przy odczycie pliku");
                 return;
             }
-            ElGamal elGamal = new ElGamal();
-            elGamal.decryptMessage(new BigInteger(textToDecrypt.getText()));
 
         }
 
-        //tu deszyfrowanie
-        if(radioWindow.isSelected()) {
-            textToEncrypt.setText(new String(content, StandardCharsets.UTF_8));
-        }
+        ElGamal elGamal = new ElGamal();
+        elGamal.setC1(new BigInteger(textToDecrypt.getText()));
+        elGamal.setC2(new BigInteger(textToDecrypt2.getText()));
+        elGamal.setP(new BigInteger(HexFormat.of().parseHex(publicKeyP.getText())));
+        elGamal.setPrivateKey(new BigInteger(HexFormat.of().parseHex(privateKey.getText())));
+       // System.out.println(elGamal.decryptMessage());
+        textToEncrypt.setText(elGamal.decryptMessage());
+
+//        if(radioWindow.isSelected()) {
+//            textToEncrypt.setText(new String(content, StandardCharsets.UTF_8));
+//        }
         saveButton.setVisible(true);
         saveButton.setText("Zapisz odszyfrowany");
         infoLabel.setText("Odszyfrowano pomyślnie");

@@ -9,6 +9,21 @@ public class ElGamal {
     private BigInteger p;
     private BigInteger k;
     private BigInteger h;
+    private BigInteger g;
+
+    private BigInteger Nm1;
+
+    private BigInteger c1;
+
+    private BigInteger c2;
+
+    private String pKey = "";
+
+    private String gKey = "";
+
+    private String hKey = "";
+
+    private String privateKey = "";
 
     public void setP(BigInteger p) {
         this.p = p;
@@ -22,32 +37,23 @@ public class ElGamal {
         this.g = g;
     }
 
-    private BigInteger g;
-    private BigInteger Nm1;
+    public void setC1(BigInteger c1) {
+        this.c1 = c1;
+    }
 
-    private String pKey = "";
-
-    private String gKey = "";
-
-    private String hKey = "";
-
-    private String privateKey = "";
+    public void setC2(BigInteger c2) {
+        this.c2 = c2;
+    }
 
     public void generateKeys() {
         p = BigInteger.probablePrime(512, new SecureRandom());
-        g = new BigInteger(512, new SecureRandom());
-        k = new BigInteger(512, new SecureRandom()); // to tylko prywatny
+        g = new BigInteger(510, new SecureRandom());
+        k = new BigInteger(510, new SecureRandom()); // to tylko prywatny
         // N == p // g == g // a == k //
-
         h = g.modPow(k, p);
         Nm1 = p.subtract(BigInteger.ONE);
 
-        while (true) {
-            p = BigInteger.probablePrime(512, new SecureRandom());
-            if (p.gcd(Nm1).equals(BigInteger.ONE)) {
-                break;
-            }
-        }
+
         byte[] t1 = p.toByteArray();
         byte[] t2 = g.toByteArray();
         byte[] t3 = h.toByteArray();
@@ -60,27 +66,36 @@ public class ElGamal {
 
     }
 
-    public byte[] encryptMessage(byte[] toEncrypt) {
-        byte[] encrypted = null;
+    public String encryptMessage(byte[] toEncrypt) {
 
-        BigInteger b = new BigInteger(256, new SecureRandom());
+        BigInteger b = new BigInteger(500, new SecureRandom());
+        if(Nm1 == null) {
+            Nm1 = p.subtract(BigInteger.ONE);
+        }
+
+        while (true) {
+            if (b.gcd(Nm1).equals(BigInteger.ONE)) {
+                break;
+            }
+            b = BigInteger.probablePrime(500, new SecureRandom());
+        }
+
         BigInteger temp = new BigInteger(toEncrypt);
+        System.out.println(temp + " Wartość liczbowa tekstu");
         BigInteger c1 = g.modPow(b, p);
-        BigInteger c2 = h.modPow(b, p);
+        BigInteger c2 = h.modPow(b,p);
         c2 = c2.multiply(temp);
             System.out.println("c1: " +c1);
             System.out.println("c2: " +c2);
 
-    return encrypted;
+    return (c1.toString()+c2.toString());
     }
 
-    public String decryptMessage(BigInteger c1) {
-        BigInteger temp;
-        BigInteger subs = BigInteger.valueOf(2);
-        BigInteger temp2;
-        temp = c1.modPow(k,p);
-        temp2 = temp.modPow((p.subtract(subs)),p);
-        //temp2 = c2.multiply(temp2);
+    public String decryptMessage() {
+
+        BigInteger temp = c1.modPow(k,p);
+        BigInteger temp2 = c2.divide(temp);
+
         byte[] test = temp2.toByteArray();
         String decrypted = new String(test);
         return decrypted;
@@ -110,8 +125,8 @@ public class ElGamal {
         this.hKey = hKey;
     }
 
-    public void setPrivateKey(String privateKey) {
-        this.privateKey = privateKey;
+    public void setPrivateKey(BigInteger tt) {
+        this.k = tt;
     }
 
     public String getPrivateKey() {
