@@ -84,12 +84,6 @@ public class MainController {
 
     File file;
 
-    BigInteger p;
-    BigInteger h;
-    BigInteger g;
-    BigInteger pk;
-
-
     public void showStage() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("hello-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 850, 600);
@@ -129,7 +123,15 @@ public class MainController {
     }
 
     public boolean verifyKeys() {
-        if(false){//Tu sie da weryfikacja w algorytmie
+        ElGamal elGamal = new ElGamal();
+
+        elGamal.setP(new BigInteger(HexFormat.of().parseHex(publicKeyP.getText())));
+        elGamal.setH(new BigInteger(HexFormat.of().parseHex(publicKeyH.getText())));
+        elGamal.setG(new BigInteger(HexFormat.of().parseHex(publicKeyG.getText())));
+        elGamal.setPrivateKey(new BigInteger(HexFormat.of().parseHex(privateKey.getText())));
+
+        if(!elGamal.verifyKeys()){
+
             publicKeyG.setBorder(new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
             publicKeyH.setBorder(new Border(new BorderStroke(Color.RED,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
             publicKeyP.setBorder(new Border(new BorderStroke(Color.RED,BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(2))));
