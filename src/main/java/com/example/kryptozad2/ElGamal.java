@@ -119,17 +119,6 @@ public class ElGamal {
         return hKey;
     }
 
-    public void setpKey(String pKey) {
-        this.pKey = pKey;
-    }
-
-    public void setgKey(String gKey) {
-        this.gKey = gKey;
-    }
-
-    public void sethKey(String hKey) {
-        this.hKey = hKey;
-    }
 
     public void setPrivateKey(BigInteger tt) {
         this.k = tt;
