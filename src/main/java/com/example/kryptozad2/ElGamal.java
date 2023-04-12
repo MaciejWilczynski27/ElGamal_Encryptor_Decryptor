@@ -66,7 +66,7 @@ public class ElGamal {
 
     }
 
-    public String encryptMessage(byte[] toEncrypt) {
+    public String[] encryptMessage(byte[] toEncrypt) {
 
         BigInteger b = new BigInteger(500, new SecureRandom());
         if(Nm1 == null) {
@@ -81,13 +81,20 @@ public class ElGamal {
         }
 
         BigInteger temp = new BigInteger(toEncrypt);
-
         BigInteger c1 = g.modPow(b, p);
         BigInteger c2 = h.modPow(b,p);
         c2 = c2.multiply(temp);
+        String[] parts = new String[2];
+        parts[0] = c1.toString();
+        parts[1] =c2.toString();
+        return parts;
+    }
+    public boolean verifyKeys() {
 
-
-    return (c1.toString()+c2.toString());
+        if(h.equals(g.modPow(k, p))) {
+            return true;
+        }
+        return false;
     }
 
     public String decryptMessage() {
@@ -100,14 +107,6 @@ public class ElGamal {
         return decrypted;
     }
 
-    public boolean verifyKeys() {
-
-        if(h.equals(g.modPow(k, p))) {
-            return true;
-        }
-        return false;
-    }
-
     public String getpKey() {
         return pKey;
     }
@@ -118,6 +117,18 @@ public class ElGamal {
 
     public String gethKey() {
         return hKey;
+    }
+
+    public void setpKey(String pKey) {
+        this.pKey = pKey;
+    }
+
+    public void setgKey(String gKey) {
+        this.gKey = gKey;
+    }
+
+    public void sethKey(String hKey) {
+        this.hKey = hKey;
     }
 
     public void setPrivateKey(BigInteger tt) {
