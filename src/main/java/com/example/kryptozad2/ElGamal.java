@@ -86,7 +86,7 @@ public class ElGamal {
         c2 = c2.multiply(temp);
         String[] parts = new String[2];
         parts[0] = c1.toString();
-        parts[1] =c2.toString();
+        parts[1] = c2.toString();
         return parts;
     }
     public boolean verifyKeys() {
@@ -97,14 +97,14 @@ public class ElGamal {
         return false;
     }
 
-    public String decryptMessage() {
+    public byte[] decryptMessage() {
 
         BigInteger temp = c1.modPow(k,p);
         BigInteger temp2 = c2.divide(temp);
 
         byte[] test = temp2.toByteArray();
-        String decrypted = new String(test);
-        return decrypted;
+
+        return test;
     }
 
     public String getpKey() {

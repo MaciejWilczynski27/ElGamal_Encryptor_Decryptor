@@ -188,7 +188,7 @@ public class MainController {
                 infoLabel.setText("Pole jest puste");
                 return;
             }
-            content = textToEncrypt.getText().getBytes(StandardCharsets.UTF_8);//tu format moze sie psuc
+            content = textToEncrypt.getText().getBytes(StandardCharsets.UTF_8);
         } else if (radioFile.isSelected()) {
             try {
                 content = Files.readAllBytes(Paths.get(filePath.getText()));
@@ -228,7 +228,7 @@ public class MainController {
                 infoLabel.setText("Pole jest puste");
                 return;
             }
-            content = textToDecrypt.getText().getBytes();//tu format moze sie psuc
+            content = textToDecrypt.getText().getBytes();
         } else if (radioFile.isSelected()) {
             try {
                 content = Files.readAllBytes(Paths.get(filePath.getText()));
@@ -246,12 +246,13 @@ public class MainController {
             String[] parts = textToDecrypt.getText().split("\n");
             elGamal.setC1(new BigInteger(parts[0]));
             elGamal.setC2(new BigInteger(parts[1]));
-            textToEncrypt.setText(elGamal.decryptMessage());
+
+            textToEncrypt.setText(new String(elGamal.decryptMessage()));
         } else if(radioFile.isSelected()){
             String[] parts = new String(content).split("\n");
             elGamal.setC1(new BigInteger(parts[0]));
             elGamal.setC2(new BigInteger(parts[1]));
-            content = elGamal.decryptMessage().getBytes();
+            content = elGamal.decryptMessage();
             saveButton.setVisible(true);
             saveButton.setText("Zapisz odszyfrowany");
         }
@@ -279,6 +280,8 @@ public class MainController {
         fileChooser.getExtensionFilters().add(pdfFilter);
         FileChooser.ExtensionFilter binFilter = new FileChooser.ExtensionFilter("Binary Files (*.bin)", "*.bin");
         fileChooser.getExtensionFilters().add(binFilter);
+        FileChooser.ExtensionFilter pngFilter = new FileChooser.ExtensionFilter("PNG Files (*.png)", "*.png");
+        fileChooser.getExtensionFilters().add(pngFilter);
         fileChooser.setTitle("Zapisz plik");
         file = fileChooser.showSaveDialog(stage);
         try(FileOutputStream stream = new FileOutputStream(file)) {
